@@ -1,0 +1,8 @@
+menuconfig PKG_USING_BWPS
+    bool "balance wireless protocol stack packages options"
+    default y
+
+config PKG_BWPS_DEBUG
+    bool "Enable BWPS DEBUG"
+    depends on PKG_USING_BWPS
+    default n
