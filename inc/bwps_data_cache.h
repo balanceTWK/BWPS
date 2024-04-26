@@ -37,6 +37,8 @@ struct bwps_map_unit
 int bwps_data_cache_init(void);
 bwps_error_t bwps_map_update_sequence(struct bwps_control_logic_data* data);
 bwps_error_t bwps_get_map_beacon_data(struct bwps_beacon_data* data);
+bwps_error_t bwps_map_add_mac(uint32_t mac);
+bwps_error_t bwps_map_delete_mac(uint32_t mac);
 
 #ifdef __cplusplus
 }

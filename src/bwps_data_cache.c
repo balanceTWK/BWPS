@@ -13,7 +13,7 @@ bwps_error_t bwps_map_update_sequence(struct bwps_control_logic_data* data)
     uint32_t mac;
     uint16_t time_slot;
     mac = data->mac;
-    time_slot = data->time_slot;
+    time_slot = data->time_slot - 1;
 
     if(mac == bwps_map[time_slot].mac)
     {
@@ -46,11 +46,38 @@ bwps_error_t bwps_get_map_beacon_data(struct bwps_beacon_data* data)
     return BWPS_OK;
 }
 
+bwps_error_t bwps_map_add_mac(uint32_t mac)
+{
+    for (int i = 0; i < sizeof(bwps_map)/sizeof(struct bwps_map_unit); i++)
+    {
+        if(bwps_map[i].mac == 0)
+        {
+            bwps_map[i].mac = mac;
+            bwps_map[i].sequence = 0;
+            return BWPS_OK;
+        }
+    }
+
+    return BWPS_ERROR;
+}
+
+bwps_error_t bwps_map_delete_mac(uint32_t mac)
+{
+    for (int i = 0; i < sizeof(bwps_map)/sizeof(struct bwps_map_unit); i++)
+    {
+        if(bwps_map[i].mac == mac)
+        {
+            bwps_map[i].mac = 0;
+            bwps_map[i].sequence = 0;
+            return BWPS_OK;
+        }
+    }
+
+    return BWPS_ERROR;
+}
+
 int bwps_data_cache_init(void)
 {
-    bwps_map[1].mac = 0x11111111;
-    bwps_map[1].sequence = 0;
-
     return BWPS_OK;
 }
 

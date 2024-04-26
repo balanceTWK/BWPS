@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-#include "bwps_port.h"
+
 
 enum bwps_error
 {
@@ -26,7 +26,6 @@ enum bwps_error
 };
 typedef enum bwps_error bwps_error_t;
 
-#include "bwps_port.h"
 #include "bwps_link_layer.h"
 #include "bwps_data_cache.h"
 #include "bwps_data_control_logic_layer.h"
