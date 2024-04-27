@@ -23,6 +23,10 @@ bwps_error_t bwps_map_update_sequence(struct bwps_control_logic_data* data)
             return BWPS_OK;
         }
     }
+    else
+    {
+        bwps_map_delete_mac(data->mac);
+    }
     return BWPS_ERROR;
 }
 
