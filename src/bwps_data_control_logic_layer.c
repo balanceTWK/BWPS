@@ -22,9 +22,21 @@ void *bwps_data_control_logic_thread(void *args)
     while (1)
     {
         chip_os_queue_get(&data_control_logic_layer_queue, &data, CHIP_OS_TIME_FOREVER);
-        if (BWPS_OK == bwps_map_update_sequence(&data))
+        if(data.time_slot == 0) /* 广播时隙，需要分配时隙。 */
         {
-            LOG_I("mac:%08X time_slot:%d sequence:%d", data.mac, data.time_slot, data.sequence);
+            bwps_map_delete_mac(data.mac);
+            bwps_map_add_mac(data.mac);
+        }
+        else
+        {
+            if (BWPS_OK == bwps_map_update_sequence(&data))
+            {   /* 序列号有变化，可以做处理。 */
+                LOG_I("mac:%08X time_slot:%d sequence:%d", data.mac, data.time_slot, data.sequence);
+            }
+            else
+            {   /* 终端数据重复或者发送时隙存在问题。 */
+                LOG_E("Terminal data duplication or transmission time slot problem.");
+            }
         }
         chip_os_task_sleep_ms(10);
     }

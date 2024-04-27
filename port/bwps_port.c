@@ -185,7 +185,7 @@ static void turmass_B_low_level_processing_thread(void* parameter)
     turmass_module_send_with_response(2, "AT+FREQ=451125000\r\n","AT_OK",500);
     turmass_module_send_with_response(2, "AT+WORKMODE=32\r\n","AT_OK",500);
     turmass_module_send_with_response(2, "AT+CH=0,1,451125000\r\n","AT_OK",500);
-    turmass_module_send_with_response(2, "AT+FRAMECFG=8,600,8,600,7,600,8,600,8,600,7,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600\r\n","AT_OK",500);
+    turmass_module_send_with_response(2, "AT+FRAMECFG=8,600,8,600,7,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600,8,600\r\n","AT_OK",500);
     turmass_module_send_with_response(2, "AT+TXP=13\r\n","AT_OK",500);
     turmass_module_send_with_response(2, "AT+RATE=18\r\n","AT_OK",500);
     turmass_module_send_with_response(2, "AT+NETSCAN=1\r\n","+EVT_SEARCH:1",5000);
