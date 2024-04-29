@@ -120,7 +120,6 @@ void * bwps_link_layer_thread(void * args)
 void * bwps_beacon_thread(void * args)
 {
     static struct bwps_raw_data beacon_raw_data;
-    static struct bwps_beacon_data data;
     bwps_low_level_send_func bwps_ll_send;
     static uint32_t last_time = 0;
     static uint32_t now_time = 0;
@@ -144,20 +143,36 @@ void * bwps_beacon_thread(void * args)
             {
                 chip_os_task_sleep_ms(500-(now_time - last_time));
             }
-            bwps_get_map_beacon_data(&data);
-            memcpy(beacon_raw_data.buf, &data, sizeof(beacon_raw_data.buf));
 
             beacon_raw_data.sequence++;
+            if(beacon_raw_data.sequence >= 10)
+            {
+                beacon_raw_data.sequence = 0;
+            }
+
+            switch (beacon_raw_data.sequence%3)
+            {
+            case 0:
+                bwps_get_sequence_beacon_data((struct bwps_beacon_sequence_data*)beacon_raw_data.buf);
+                break;
+            case 1:
+                bwps_get_mac_beacon_data_1((struct bwps_beacon_mac_data*)beacon_raw_data.buf);
+                break;
+            case 2:
+                bwps_get_mac_beacon_data_2((struct bwps_beacon_mac_data*)beacon_raw_data.buf);
+                break;
+            default:
+                bwps_get_sequence_beacon_data((struct bwps_beacon_sequence_data*)beacon_raw_data.buf);
+                break;
+            }
+
             beacon_raw_data.crc = 0;
             for (int i = 0; i < beacon_raw_data.len; i++)
             {
                 beacon_raw_data.crc = beacon_raw_data.crc + beacon_raw_data.buf[i];
             }
             beacon_raw_data.crc = ~beacon_raw_data.crc;
-            if(beacon_raw_data.sequence > 10)
-            {
-                beacon_raw_data.sequence = 1;
-            }
+            LOG_I("CRC:0x%08X",beacon_raw_data.crc);
             bwps_ll_send(&beacon_raw_data, 1);
         }
         else

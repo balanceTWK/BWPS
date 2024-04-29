@@ -24,7 +24,7 @@ void *bwps_data_control_logic_thread(void *args)
         chip_os_queue_get(&data_control_logic_layer_queue, &data, CHIP_OS_TIME_FOREVER);
         if(data.time_slot == 0) /* 广播时隙，需要分配时隙。 */
         {
-            bwps_map_delete_mac(data.mac);
+            LOG_W("mac:%08X time_slot:%d len:%d",data.mac,data.time_slot,data.len);
             bwps_map_add_mac(data.mac);
         }
         else
