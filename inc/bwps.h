@@ -23,6 +23,7 @@ enum bwps_error
     BWPS_ENOENT          = 10,
     BWPS_EBUSY           = 11,
     BWPS_ERROR           = 12,
+    BWPS_NOTHING         = 13,
 };
 typedef enum bwps_error bwps_error_t;
 

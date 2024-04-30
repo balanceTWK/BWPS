@@ -22,10 +22,21 @@ bwps_error_t bwps_map_update_sequence(struct bwps_control_logic_data* data)
             bwps_map[time_slot].sequence = data->sequence;
             return BWPS_OK;
         }
+        else
+        {
+            LOG_D("Terminal data duplication. mac:0x%08X time_slot:0x%08X sequence:%d",data->mac,data->time_slot,data->sequence);
+            return BWPS_NOTHING;
+        }
     }
     else
     {
-        bwps_map_delete_mac(data->mac);
+        LOG_E("Terminal transmission time slot problem. mac:0x%08X time_slot:0x%08X sequence:%d",data->mac,data->time_slot,data->sequence);
+        // bwps_map_add_mac(data->mac);
+        if(bwps_map[time_slot].mac == 0)
+        {
+            bwps_map[time_slot].mac = mac;
+            bwps_map[time_slot].sequence = data->sequence;
+        }
     }
     return BWPS_ERROR;
 }
@@ -85,7 +96,7 @@ bwps_error_t bwps_map_delete_mac(uint32_t mac)
         }
     }
 
-    return BWPS_ERROR;
+    return BWPS_OK;
 }
 
 bwps_error_t bwps_map_add_mac(uint32_t mac)
@@ -97,7 +108,7 @@ bwps_error_t bwps_map_add_mac(uint32_t mac)
         {
             bwps_map[i].mac = mac;
             bwps_map[i].sequence = 0;
-            LOG_W("add mac:%08X index :%d",bwps_map[i].mac ,i);
+            LOG_I("add mac:%08X index :%d",bwps_map[i].mac ,i + 1);
             return BWPS_OK;
         }
     }

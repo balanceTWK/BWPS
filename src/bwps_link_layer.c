@@ -76,7 +76,7 @@ void * bwps_link_layer_thread(void * args)
                     LOG_W("mac:%08X current sequence:%d lost:%d",data.mac,data.sequence, data.sequence - last_sequence - 1);    
                 }
                 now_time = chip_os_time_get_ms();
-                LOG_I("mac:%08X sequence:%d time:%ld",data.mac,data.sequence,(int64_t)((int64_t)now_time - (int64_t)last_time));
+                LOG_D("mac:%08X sequence:%d time:%ld",data.mac,data.sequence,(int64_t)((int64_t)now_time - (int64_t)last_time));
                 last_sequence = data.sequence;
                 last_time = now_time;
                 chip_os_sem_give(&link_layer_sem);
@@ -172,7 +172,7 @@ void * bwps_beacon_thread(void * args)
                 beacon_raw_data.crc = beacon_raw_data.crc + beacon_raw_data.buf[i];
             }
             beacon_raw_data.crc = ~beacon_raw_data.crc;
-            LOG_I("CRC:0x%08X",beacon_raw_data.crc);
+            LOG_D("CRC:0x%08X",beacon_raw_data.crc);
             bwps_ll_send(&beacon_raw_data, 1);
         }
         else

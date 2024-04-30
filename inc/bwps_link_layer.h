@@ -37,6 +37,13 @@ typedef struct bwps_beacon_mac_data
     uint32_t reserve_2[25];
 } bwps_beacon_mac_data_t;
 
+union bwps_beacon_data
+{
+    bwps_beacon_sequence_data_t sequence;
+    bwps_beacon_mac_data_t mac_data;
+};
+
+
 typedef bwps_error_t (*bwps_low_level_send_func)(struct bwps_raw_data* data, int mode);
 
 int bwps_link_layer_init(bwps_low_level_send_func func);

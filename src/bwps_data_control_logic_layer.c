@@ -33,10 +33,6 @@ void *bwps_data_control_logic_thread(void *args)
             {   /* 序列号有变化，可以做处理。 */
                 LOG_I("mac:%08X time_slot:%d sequence:%d", data.mac, data.time_slot, data.sequence);
             }
-            else
-            {   /* 终端数据重复或者发送时隙存在问题。 */
-                LOG_E("Terminal data duplication or transmission time slot problem.");
-            }
         }
         chip_os_task_sleep_ms(10);
     }
