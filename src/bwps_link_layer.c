@@ -153,16 +153,16 @@ void * bwps_beacon_thread(void * args)
             switch (beacon_raw_data.sequence%3)
             {
             case 0:
-                bwps_get_sequence_beacon_data((struct bwps_beacon_sequence_data*)beacon_raw_data.buf);
+                bwps_get_sequence_beacon_data((struct bwps_beacon_data*)beacon_raw_data.buf);
                 break;
             case 1:
-                bwps_get_mac_beacon_data_1((struct bwps_beacon_mac_data*)beacon_raw_data.buf);
+                bwps_get_mac_beacon_data_1((struct bwps_beacon_data*)beacon_raw_data.buf);
                 break;
             case 2:
-                bwps_get_mac_beacon_data_2((struct bwps_beacon_mac_data*)beacon_raw_data.buf);
+                bwps_get_mac_beacon_data_2((struct bwps_beacon_data*)beacon_raw_data.buf);
                 break;
             default:
-                bwps_get_sequence_beacon_data((struct bwps_beacon_sequence_data*)beacon_raw_data.buf);
+                bwps_get_sequence_beacon_data((struct bwps_beacon_data*)beacon_raw_data.buf);
                 break;
             }
 

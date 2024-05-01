@@ -21,8 +21,6 @@ typedef struct bwps_raw_data
 
 typedef struct bwps_beacon_sequence_data
 {
-    uint32_t type;
-    uint32_t mac;
     uint8_t reserve_1[72];
     uint16_t sequence_buf[200];
     uint16_t reserve_2[50];
@@ -30,18 +28,23 @@ typedef struct bwps_beacon_sequence_data
 
 typedef struct bwps_beacon_mac_data
 {
-    uint32_t type;
-    uint32_t mac;
     uint8_t reserve_1[72];
     uint32_t mac_buf[100];
     uint32_t reserve_2[25];
 } bwps_beacon_mac_data_t;
 
-union bwps_beacon_data
+union bwps_beacon_data_union
 {
-    bwps_beacon_sequence_data_t sequence;
+    bwps_beacon_sequence_data_t sequence_data;
     bwps_beacon_mac_data_t mac_data;
 };
+
+typedef struct bwps_beacon_data
+{
+    uint32_t type;
+    uint32_t mac;
+    union bwps_beacon_data_union union_data;
+} bwps_beacon_data_t;
 
 
 typedef bwps_error_t (*bwps_low_level_send_func)(struct bwps_raw_data* data, int mode);
