@@ -301,6 +301,8 @@ int bwps_user_init(void)
         rt_thread_startup(tid2);
     }
 
+    rt_thread_mdelay(5000);
+
     bwps_link_layer_init(bwps_turmass_low_level_send);
     bwps_data_cache_init();
     bwps_data_control_logic_layer_init();
