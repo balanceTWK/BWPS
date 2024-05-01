@@ -30,12 +30,17 @@ bwps_error_t bwps_map_update_sequence(struct bwps_control_logic_data* data)
     }
     else
     {
-        LOG_E("Terminal transmission time slot problem. mac:0x%08X time_slot:0x%08X sequence:%d",data->mac,data->time_slot,data->sequence);
         // bwps_map_add_mac(data->mac);
         if(bwps_map[time_slot].mac == 0)
         {
+            LOG_W("Terminal mac add. mac:0x%08X time_slot:0x%08X sequence:%d",data->mac,data->time_slot,data->sequence);
             bwps_map[time_slot].mac = mac;
             bwps_map[time_slot].sequence = data->sequence;
+            return BWPS_OK;
+        }
+        else
+        {
+            LOG_E("Terminal transmission time slot problem. mac:0x%08X time_slot:0x%08X sequence:%d",data->mac,data->time_slot,data->sequence);
         }
     }
     return BWPS_ERROR;
