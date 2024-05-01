@@ -41,6 +41,7 @@ bwps_error_t bwps_get_mac_beacon_data_1(struct bwps_beacon_data* data);
 bwps_error_t bwps_get_mac_beacon_data_2(struct bwps_beacon_data* data);
 bwps_error_t bwps_map_add_mac(uint32_t mac);
 bwps_error_t bwps_map_delete_mac(uint32_t mac);
+struct bwps_map_unit* bwps_get_map(void);
 
 #ifdef __cplusplus
 }

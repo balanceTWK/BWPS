@@ -9,6 +9,8 @@ extern "C" {
 #define DBG_LVL DBG_INFO
 #include <rtdbg.h>
 
+#define BWPS_TERMINAL_NUMBERS 200
+
 // #if 1
 // #define LOG_D(...) rt_kprintf(__VA_ARGS__)
 // #else
