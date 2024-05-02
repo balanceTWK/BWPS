@@ -32,6 +32,7 @@ void *bwps_data_control_logic_thread(void *args)
             if (BWPS_OK == bwps_map_update_sequence(&data))
             {   /* 序列号有变化，可以做处理。 */
                 LOG_I("mac:%08X time_slot:%d sequence:%d", data.mac, data.time_slot, data.sequence);
+                bwps_data_cache_add(&data);
             }
         }
         chip_os_task_sleep_ms(10);
