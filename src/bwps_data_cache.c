@@ -208,7 +208,7 @@ bwps_error_t bwps_data_cache_get(struct bwps_control_logic_data *out_data)
         {
             temp = (struct bwps_data_cache_node *)(bwps_data_cache_list.prev);
             LOG_D("prev mac:0x%08X", temp->data.mac);
-            memcpy(out_data, temp, sizeof(struct bwps_control_logic_data));
+            memcpy(out_data, &(temp->data), sizeof(struct bwps_control_logic_data));
             bwps_free(bwps_data_cache_list.prev);
             bwps_data_cache_list_remove(bwps_data_cache_list.prev);
             ret = BWPS_OK;
