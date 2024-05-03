@@ -35,7 +35,7 @@ void *bwps_data_control_logic_thread(void *args)
                 bwps_data_cache_add(&data);
             }
         }
-        chip_os_task_sleep_ms(10);
+        chip_os_task_sleep(1);
     }
 }
 
@@ -43,8 +43,8 @@ int bwps_data_control_logic_layer_init(void)
 {
     bwps_error_t osal_err;
 
-    osal_err = chip_os_queue_init(&data_control_logic_layer_queue, sizeof(struct bwps_control_logic_data), 10);
-    osal_err = chip_os_task_init(&data_control_logic_layer_task, "bwps_data_control_logic_layer", bwps_data_control_logic_thread, &data_control_logic_layer_queue, 23, 2048);
+    osal_err = chip_os_queue_init(&data_control_logic_layer_queue, sizeof(struct bwps_control_logic_data), 40*2);
+    osal_err = chip_os_task_init(&data_control_logic_layer_task, "bwps_data_control_logic_layer", bwps_data_control_logic_thread, &data_control_logic_layer_queue, 19, 2048);
 
     return (osal_err == BWPS_OK) ? 0 : -1;
 }

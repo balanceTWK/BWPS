@@ -7,6 +7,7 @@
 #include "bwps_data_control_logic_layer.h"
 
 static struct chip_os_task link_layer_task;
+static struct chip_os_task bwps_beacon_task;
 static struct chip_os_queue link_layer_queue;
 static struct chip_os_sem link_layer_sem;
 
@@ -187,11 +188,11 @@ int bwps_link_layer_init(bwps_low_level_send_func func)
 {
     bwps_error_t osal_err;
 
-    osal_err = chip_os_queue_init(&link_layer_queue, sizeof(struct bwps_raw_data), 10);
+    osal_err = chip_os_queue_init(&link_layer_queue, sizeof(struct bwps_raw_data), 40);
     osal_err = chip_os_sem_init(&link_layer_sem, 1);
 
-    osal_err = chip_os_task_init(&link_layer_task, "bwps_link_layer", bwps_link_layer_thread, &link_layer_queue, CHIP_OS_PRIORITY_APP, 2048);
-    osal_err = chip_os_task_init(&link_layer_task, "bwps_beacon", bwps_beacon_thread, func, 9, 2048);
+    osal_err = chip_os_task_init(&link_layer_task, "bwps_link_layer", bwps_link_layer_thread, &link_layer_queue, 18, 2048);
+    osal_err = chip_os_task_init(&bwps_beacon_task, "bwps_beacon", bwps_beacon_thread, func, 9, 2048);
 
     return (osal_err == 0) ? 0 : -1;
 }
