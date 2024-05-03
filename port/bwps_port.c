@@ -7,6 +7,7 @@
 #include "bwps_link_layer.h"
 #include "bwps_data_cache.h"
 #include "bwps_data_control_logic_layer.h"
+#include "bwps_host_layer.h"
 
 static rt_device_t uart1;
 static rt_mq_t turmass_mq_A;

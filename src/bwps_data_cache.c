@@ -199,6 +199,8 @@ void bwps_data_cache_add(struct bwps_control_logic_data *data)
 bwps_error_t bwps_data_cache_get(struct bwps_control_logic_data *out_data)
 {
     struct bwps_data_cache_node *temp;
+    bwps_error_t ret;
+    ret = BWPS_ERROR;
     chip_os_mutex_take(&bwps_data_cache_mutex, CHIP_OS_TIME_FOREVER);
     if (out_data)
     {
@@ -209,10 +211,11 @@ bwps_error_t bwps_data_cache_get(struct bwps_control_logic_data *out_data)
             memcpy(out_data, temp, sizeof(struct bwps_control_logic_data));
             bwps_free(bwps_data_cache_list.prev);
             bwps_data_cache_list_remove(bwps_data_cache_list.prev);
+            ret = BWPS_OK;
         }
     }
     chip_os_mutex_give(&bwps_data_cache_mutex);
-    return BWPS_OK;
+    return ret;
 }
 
 int bwps_data_cache_init(void)
