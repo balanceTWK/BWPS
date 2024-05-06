@@ -9,6 +9,7 @@
 static bwps_list_node_t bwps_data_cache_list;
 static struct bwps_map_unit bwps_map[BWPS_TERMINAL_NUMBERS];
 static struct chip_os_mutex bwps_data_cache_mutex;
+static struct chip_os_queue bwps_beacon_queue;
 
 void bwps_data_cache_list_init(bwps_list_node_t *l)
 {
@@ -146,6 +147,38 @@ bwps_error_t bwps_get_mac_beacon_data_2(struct bwps_beacon_data *data)
     return BWPS_OK;
 }
 
+void bwps_put_raw_beacon_data(uint32_t mac, uint8_t* buf, int len)
+{
+    static struct bwps_beacon_data data;
+    int index;
+    data.mac = mac;
+    data.type = 3;
+    index = 0;
+
+    for (int i = 0; i < len; i++)
+    {
+        if(index==sizeof(data.union_data.raw_data.buf))
+        {
+            index = 0;
+            chip_os_queue_put(&bwps_beacon_queue, &data);
+        }
+        data.union_data.raw_data.buf[index] = buf[i];
+        index++;
+    }
+    chip_os_queue_put(&bwps_beacon_queue, &data);
+}
+
+bwps_error_t bwps_get_raw_beacon_data(struct bwps_beacon_data *data)
+{
+
+    if( CHIP_OS_OK == chip_os_queue_get(&bwps_beacon_queue, data, 0))
+    {
+        data->type = 3;
+        return BWPS_OK;
+    }
+    return BWPS_ERROR;
+}
+
 bwps_error_t bwps_map_delete_mac(uint32_t mac)
 {
     for (int i = 0; i < sizeof(bwps_map) / sizeof(struct bwps_map_unit); i++)
@@ -221,6 +254,7 @@ bwps_error_t bwps_data_cache_get(struct bwps_control_logic_data *out_data)
 int bwps_data_cache_init(void)
 {
     chip_os_mutex_init(&bwps_data_cache_mutex);
+    chip_os_queue_init(&bwps_beacon_queue, sizeof(struct bwps_beacon_data), 40);
     bwps_data_cache_list_init(&bwps_data_cache_list);
     return BWPS_OK;
 }

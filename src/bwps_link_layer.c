@@ -10,6 +10,8 @@ static struct chip_os_task link_layer_task;
 static struct chip_os_task bwps_beacon_task;
 static struct chip_os_queue link_layer_queue;
 static struct chip_os_sem link_layer_sem;
+static struct chip_os_mutex link_layer_send_mutex;
+bwps_low_level_send_func bwps_ll_send = NULL;
 
 uint32_t bwps_timeslot_map[200];
 
@@ -36,6 +38,17 @@ bwps_error_t bwps_link_layer_put(struct bwps_raw_data* data)
     chip_os_queue_put(&link_layer_queue, data);
 
     return BWPS_OK;
+}
+
+void bwps_link_layer_send_with_mutex(struct bwps_raw_data* data, int mode)
+{
+    if(bwps_ll_send)
+    {
+        chip_os_mutex_take(&link_layer_send_mutex, CHIP_OS_TIME_FOREVER);
+        bwps_ll_send(data,mode);
+        chip_os_task_sleep_ms(100);
+        chip_os_mutex_give(&link_layer_send_mutex);
+    }
 }
 
 void * bwps_link_layer_thread(void * args)
@@ -121,11 +134,9 @@ void * bwps_link_layer_thread(void * args)
 void * bwps_beacon_thread(void * args)
 {
     static struct bwps_raw_data beacon_raw_data;
-    bwps_low_level_send_func bwps_ll_send;
     static uint32_t last_time = 0;
     static uint32_t now_time = 0;
 
-    bwps_ll_send = (bwps_low_level_send_func)args;
     beacon_raw_data.head = 0xA5A5A5A5;
     beacon_raw_data.mac = 0x00000000;
     beacon_raw_data.time_slot = 0;
@@ -150,21 +161,23 @@ void * bwps_beacon_thread(void * args)
             {
                 beacon_raw_data.sequence = 0;
             }
-
-            switch (beacon_raw_data.sequence%3)
+            if( BWPS_OK != bwps_get_raw_beacon_data((struct bwps_beacon_data*)beacon_raw_data.buf))
             {
-            case 0:
-                bwps_get_sequence_beacon_data((struct bwps_beacon_data*)beacon_raw_data.buf);
-                break;
-            case 1:
-                bwps_get_mac_beacon_data_1((struct bwps_beacon_data*)beacon_raw_data.buf);
-                break;
-            case 2:
-                bwps_get_mac_beacon_data_2((struct bwps_beacon_data*)beacon_raw_data.buf);
-                break;
-            default:
-                bwps_get_sequence_beacon_data((struct bwps_beacon_data*)beacon_raw_data.buf);
-                break;
+                switch (beacon_raw_data.sequence%3)
+                {
+                case 0:
+                    bwps_get_sequence_beacon_data((struct bwps_beacon_data*)beacon_raw_data.buf);
+                    break;
+                case 1:
+                    bwps_get_mac_beacon_data_1((struct bwps_beacon_data*)beacon_raw_data.buf);
+                    break;
+                case 2:
+                    bwps_get_mac_beacon_data_2((struct bwps_beacon_data*)beacon_raw_data.buf);
+                    break;
+                default:
+                    bwps_get_sequence_beacon_data((struct bwps_beacon_data*)beacon_raw_data.buf);
+                    break;
+                }
             }
 
             beacon_raw_data.crc = 0;
@@ -174,11 +187,11 @@ void * bwps_beacon_thread(void * args)
             }
             beacon_raw_data.crc = ~beacon_raw_data.crc;
             LOG_D("CRC:0x%08X",beacon_raw_data.crc);
-            bwps_ll_send(&beacon_raw_data, 1);
+            bwps_link_layer_send_with_mutex(&beacon_raw_data, 1);
         }
         else
         {
-            bwps_ll_send(&beacon_raw_data, 1);
+            bwps_link_layer_send_with_mutex(&beacon_raw_data, 1);
         }
         last_time = now_time;
     }
@@ -187,7 +200,9 @@ void * bwps_beacon_thread(void * args)
 int bwps_link_layer_init(bwps_low_level_send_func func)
 {
     bwps_error_t osal_err;
+    bwps_ll_send = (bwps_low_level_send_func)func;
 
+    chip_os_mutex_init(&link_layer_send_mutex);
     osal_err = chip_os_queue_init(&link_layer_queue, sizeof(struct bwps_raw_data), 40);
     osal_err = chip_os_sem_init(&link_layer_sem, 1);
 
